@@ -13,7 +13,7 @@
 			"path": "src/Project.Application"
 		},
 		{
-			"path": "src/Project.WebApi"
+			"path": "test/Project.UseCase.Test"
 		}
 	],
 	"settings": {}
