@@ -13,6 +13,11 @@
 			"path": "src/Project.Application"
 		},
 		{
+			"name": "Project.Infrastructure",
+			"path": "src/Project.Infrastructure"
+		},
+		{
+			"name": "Project.WebApi",
 			"path": "src/Project.WebApi"
 		}
 	],
