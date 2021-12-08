@@ -5,6 +5,10 @@
     <ProjectReference Include="..\KingnetSmartlife.DDD.CleanArchitecture.Abstractions\KingnetSmartlife.DDD.CleanArchitecture.Abstructions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="10.3.5" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
