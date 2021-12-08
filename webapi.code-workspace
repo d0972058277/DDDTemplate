@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "KingnetSmartlife.DDD.CleanArchitecture.Abstractions",
+			"path": "src/KingnetSmartlife.DDD.CleanArchitecture.Abstractions"
+		},
+		{
+			"name": "Project.Domain",
+			"path": "src/Project.Domain"
+		},
+		{
+			"name": "Project.Application",
+			"path": "src/Project.Application"
+		},
+		{
+			"path": "src/Project.WebApi"
+		}
+	],
+	"settings": {}
+}
