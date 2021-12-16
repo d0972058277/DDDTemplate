@@ -36,10 +36,10 @@ namespace Project.UseCase.Test.Commands.KanbanBoundedContext.CreateBoard
         {
             // Given
             var boardId = Guid.NewGuid();
-            var boardName = "boardName";
+            var name = "boardName";
             var userId = Guid.NewGuid();
 
-            var command = new CreateBoardCommand(boardId, boardName, userId);
+            var command = new CreateBoardCommand(boardId, name, userId);
             var handler = new CreateBoardCommandHandler(BoardRepository, EventMediator);
             var cancellationToken = default(CancellationToken);
 
@@ -57,13 +57,13 @@ namespace Project.UseCase.Test.Commands.KanbanBoundedContext.CreateBoard
         {
             // Given
             var boardId = Guid.NewGuid();
-            var boardName = "boardName";
+            var name = "boardName";
             var userId = Guid.NewGuid();
-            var board = Board.Create(boardId, boardName, userId);
+            var board = Board.Create(boardId, name, userId);
             board.ClearDomainEvents();
             BoardRepository.Init(board);
 
-            var command = new CreateBoardCommand(boardId, boardName, userId);
+            var command = new CreateBoardCommand(boardId, name, userId);
             var handler = new CreateBoardCommandHandler(BoardRepository, EventMediator);
             var cancellationToken = default(CancellationToken);
 
