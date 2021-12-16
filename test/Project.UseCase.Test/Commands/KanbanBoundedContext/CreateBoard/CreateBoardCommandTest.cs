@@ -18,16 +18,16 @@ namespace Project.UseCase.Test.Commands.KanbanBoundedContext.CreateBoard
 {
     public class CreateBoardCommandTest
     {
-        Mock<FakeBoardRepository> _mockNotificationRepository;
+        Mock<FakeBoardRepository> _mockBoardRepository;
         Mock<FakeEventMediator> _mockEventMediator;
 
         public CreateBoardCommandTest(Mock<FakeBoardRepository> mockNotificationRepository, Mock<FakeEventMediator> mockEventMediator)
         {
-            _mockNotificationRepository = mockNotificationRepository;
+            _mockBoardRepository = mockNotificationRepository;
             _mockEventMediator = mockEventMediator;
         }
 
-        FakeBoardRepository BoardRepository => _mockNotificationRepository.Object;
+        FakeBoardRepository BoardRepository => _mockBoardRepository.Object;
 
         IEventMediator EventMediator => _mockEventMediator.Object;
 
@@ -47,8 +47,8 @@ namespace Project.UseCase.Test.Commands.KanbanBoundedContext.CreateBoard
             await handler.Handle(command, cancellationToken);
 
             // Then
-            _mockNotificationRepository.Verify(m => m.FindAsync(boardId, cancellationToken), Times.Once());
-            _mockNotificationRepository.Verify(m => m.SaveAsync(It.IsAny<Board>(), cancellationToken), Times.Once());
+            _mockBoardRepository.Verify(m => m.FindAsync(boardId, cancellationToken), Times.Once());
+            _mockBoardRepository.Verify(m => m.SaveAsync(It.IsAny<Board>(), cancellationToken), Times.Once());
             _mockEventMediator.Verify(m => m.PublishDomainEventAsync(It.Is<IDomainEvent>(e => e is BoardCreatedDomainEvent), cancellationToken), Times.Once());
         }
 
