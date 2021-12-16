@@ -66,6 +66,29 @@ namespace Project.UseCase.Test
 
                 return mock;
             });
+
+            services.AddTransient<Mock<FakeWorkflowRepository>>(sp =>
+            {
+                var mock = new Mock<FakeWorkflowRepository>();
+
+                mock.Setup(m => m.FindAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                    .Returns((Guid aggregateId, CancellationToken cancellationToken) =>
+                    {
+                        mock.Object.DataSet.TryGetValue(aggregateId, out var aggregate);
+                        return Task.FromResult(aggregate);
+                    });
+
+                mock.Setup(m => m.SaveAsync(It.IsAny<Workflow>(), It.IsAny<CancellationToken>()))
+                .Callback<Workflow, CancellationToken>((aggregate, cancellationToken) =>
+                {
+                    if (mock.Object.DataSet.ContainsKey(aggregate.Id))
+                        mock.Object.DataSet[aggregate.Id] = aggregate;
+                    else
+                        mock.Object.DataSet.Add(aggregate.Id, aggregate);
+                });
+
+                return mock;
+            });
         }
     }
 }
