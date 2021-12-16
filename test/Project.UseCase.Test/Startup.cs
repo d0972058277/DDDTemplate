@@ -51,17 +51,17 @@ namespace Project.UseCase.Test
                 mock.Setup(m => m.FindAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
                     .Returns((Guid aggregateId, CancellationToken cancellationToken) =>
                     {
-                        mock.Object.Boards.TryGetValue(aggregateId, out var aggregate);
+                        mock.Object.DataSet.TryGetValue(aggregateId, out var aggregate);
                         return Task.FromResult(aggregate);
                     });
 
                 mock.Setup(m => m.SaveAsync(It.IsAny<Board>(), It.IsAny<CancellationToken>()))
                 .Callback<Board, CancellationToken>((aggregate, cancellationToken) =>
                 {
-                    if (mock.Object.Boards.ContainsKey(aggregate.Id))
-                        mock.Object.Boards[aggregate.Id] = aggregate;
+                    if (mock.Object.DataSet.ContainsKey(aggregate.Id))
+                        mock.Object.DataSet[aggregate.Id] = aggregate;
                     else
-                        mock.Object.Boards.Add(aggregate.Id, aggregate);
+                        mock.Object.DataSet.Add(aggregate.Id, aggregate);
                 });
 
                 return mock;

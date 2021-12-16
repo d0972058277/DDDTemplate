@@ -10,14 +10,14 @@ namespace Project.UseCase.Test
 {
     public abstract class FakeBoardRepository : IBoardRepository
     {
-        public Dictionary<Guid, Board> Boards = new Dictionary<Guid, Board>();
+        public Dictionary<Guid, Board> DataSet = new Dictionary<Guid, Board>();
 
         public abstract Task<Board> FindAsync(Guid boardId, CancellationToken cancellationToken);
         public abstract Task SaveAsync(Board board, CancellationToken cancellationToken);
 
         public void Init(Board board)
         {
-            Boards.TryAdd(board.Id, board);
+            DataSet.TryAdd(board.Id, board);
         }
     }
 }
