@@ -14,15 +14,15 @@ namespace Project.UseCase.Test.Aggregates.KanbanBoundedContext
         {
             // Given
             var boardId = Guid.NewGuid();
-            var boardName = "boardName";
+            var name = "boardName";
             var userId = Guid.NewGuid();
 
             // When
-            Board board = Board.Create(boardId, boardName, userId);
+            Board board = Board.Create(boardId, name, userId);
 
             // Then
             board.Id.Should().Be(boardId);
-            board.Name.Should().Be(boardName);
+            board.Name.Should().Be(name);
             board.UserId.Should().Be(userId);
             board.DomainEvents.Should().NotBeEmpty();
             board.DomainEvents.Any(e => e is BoardCreatedDomainEvent).Should().BeTrue();
