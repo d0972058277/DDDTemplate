@@ -21,6 +21,8 @@ namespace Project.Infrastructure
 
             services.TryAddTransient<IBoardRepository, BoardRepository>();
 
+            services.TryAddTransient<IWorkflowRepository, WorkflowRepository>();
+
             services.TryAddTransient<IListBoardsQueryRepository, ListBoardsQueryRepository>();
 
             services.TryAddTransient<IEventMediator, EventMediator>();

@@ -10,5 +10,6 @@ namespace Project.Infrastructure
     public class FakeDbContext
     {
         public ConcurrentDictionary<Guid, Board> Boards { get; } = new ConcurrentDictionary<Guid, Board>();
+        public ConcurrentDictionary<Guid, Workflow> Workflows { get; } = new ConcurrentDictionary<Guid, Workflow>();
     }
 }
