@@ -1,0 +1,4 @@
+namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+{
+    public interface IRepository { };
+}

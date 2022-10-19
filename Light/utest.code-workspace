@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "src/Architecture"
+		},
+		{
+			"path": "src/Project.Domain"
+		},
+		{
+			"path": "test/Project.UseCase.Test"
+		}
+	],
+	"settings": {}
+}
