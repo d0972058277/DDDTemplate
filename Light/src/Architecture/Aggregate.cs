@@ -6,6 +6,10 @@ namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
     {
         private List<IDomainEvent>? _domainEvents;
 
+        protected Aggregate() : base() { }
+
+        protected Aggregate(TId id) : base(id) { }
+
         [System.Text.Json.Serialization.JsonIgnore]
         public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents?.AsReadOnly() ?? new List<IDomainEvent>(0).AsReadOnly();
 
