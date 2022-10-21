@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+namespace Architecture
 {
     public interface IDomainEventHandler<in TDomainEvent> : INotificationHandler<TDomainEvent> where TDomainEvent : IDomainEvent { }
 }

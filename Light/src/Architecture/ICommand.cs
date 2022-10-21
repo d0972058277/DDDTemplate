@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+namespace Architecture
 {
     public interface IBaseCommand : IBaseRequest { };
     public interface ICommand<out TResult> : IBaseCommand, IRequest<TResult> { }

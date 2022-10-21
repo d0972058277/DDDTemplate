@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+namespace Architecture
 {
     public abstract class Enumeration : IComparable
     {

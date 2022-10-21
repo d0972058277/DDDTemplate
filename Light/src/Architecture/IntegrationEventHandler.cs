@@ -1,6 +1,6 @@
 using MassTransit;
 
-namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+namespace Architecture
 {
     public abstract class IntegrationEventHandler<T> : IConsumer<T> where T : IntegrationEvent
     {

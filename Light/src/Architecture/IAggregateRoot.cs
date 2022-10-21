@@ -1,4 +1,4 @@
-namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+namespace Architecture
 {
     public interface IAggregateRoot
     {

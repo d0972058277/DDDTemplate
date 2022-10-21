@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 
-namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+namespace Architecture
 {
     public abstract class Aggregate<TId> : Entity<TId>, IAggregateRoot
     {

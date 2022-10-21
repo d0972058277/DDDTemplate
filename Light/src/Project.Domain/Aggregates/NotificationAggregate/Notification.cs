@@ -1,5 +1,5 @@
 using Architecture;
-using KingnetSmartlife.DDD.CleanArchitecture.Abstractions;
+using Architecture;
 using KnstArchitecture.SequentialGuid;
 
 namespace Project.Domain.Aggregates.NotificationAggregate

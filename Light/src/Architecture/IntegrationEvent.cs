@@ -1,6 +1,6 @@
 using KnstArchitecture.SequentialGuid;
 
-namespace KingnetSmartlife.DDD.CleanArchitecture.Abstractions
+namespace Architecture
 {
     public class IntegrationEvent
     {
