@@ -6,6 +6,8 @@ namespace Project.Domain.Aggregates.NotificationAggregate
 {
     public class Notification : Aggregate<Guid>
     {
+        private Notification() { }
+
         private Notification(Guid id, Message message, Schedule schedule, List<Device> devices) : base(id)
         {
             Message = message;
@@ -13,9 +15,9 @@ namespace Project.Domain.Aggregates.NotificationAggregate
             _devices = devices;
         }
 
-        public Message Message { get; }
+        public Message Message { get; } = default!;
 
-        public Schedule Schedule { get; }
+        public Schedule Schedule { get; } = default!;
 
         private List<Device> _devices = new List<Device>();
         public IReadOnlyList<Device> Devices => _devices;

@@ -5,7 +5,7 @@ namespace Project.Domain.Aggregates.DeviceAggregate
 {
     public class Notification : Entity<Guid>
     {
-        public Notification(Guid id) : base(id) { }
+        private Notification(Guid id) : base(id) { }
 
         public DateTime? ReadTime { get; private set; }
 

@@ -5,12 +5,14 @@ namespace Project.Domain.Aggregates.DeviceAggregate
 {
     public class Device : Aggregate<Guid>
     {
+        private Device() { }
+
         private Device(Guid id, Token token) : base(id)
         {
             Token = token;
         }
 
-        public Token Token { get; }
+        public Token Token { get; } = default!;
 
         private List<Notification> _notifications = new List<Notification>();
         public IReadOnlyList<Notification> Notifications => _notifications;
