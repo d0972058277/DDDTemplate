@@ -33,5 +33,15 @@ namespace Project.Domain.Aggregates.DeviceAggregate
 
             _notifications.Add(notification);
         }
+
+        public void Read(Guid notificationId)
+        {
+            var notifications = _notifications.ToDictionary(n => n.Id, n => n);
+
+            if (notifications.TryGetValue(notificationId, out var notification))
+            {
+                notification.Read();
+            }
+        }
     }
 }

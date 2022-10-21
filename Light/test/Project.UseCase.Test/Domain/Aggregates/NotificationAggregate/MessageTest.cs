@@ -1,5 +1,5 @@
+using Architecture;
 using FluentAssertions;
-using KingnetSmartlife.DDD.CleanArchitecture.Abstractions;
 using Project.Domain.Aggregates.NotificationAggregate;
 using Xunit;
 
