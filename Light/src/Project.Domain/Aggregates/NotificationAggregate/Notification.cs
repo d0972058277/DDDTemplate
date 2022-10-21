@@ -1,5 +1,4 @@
 using Architecture;
-using Architecture;
 using KnstArchitecture.SequentialGuid;
 
 namespace Project.Domain.Aggregates.NotificationAggregate
