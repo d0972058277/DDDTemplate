@@ -186,8 +186,11 @@ builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssembli
 大致上可以分成兩類，如下圖所示：
 
 ![service](./images/service.png)
-1. Domain Service
+1. **Domain Service**
+    
     實作的過程當中，如果發現一些商業邏輯不適合放在Domain Model，就會另外實作在Domain Service中，例如：多個Aggregate的操作，像是帳戶A匯款給帳戶B時，帳戶A-100，帳戶B+100。
-2. Application Service
+
+2. **Application Service**
+    
     Application Layer的Service是Interface宣告、Infrastructure Layer的Service是Class實作。幾本上涉及到IO的都會放在Application Service當中，例如：檔案上傳、外部系統資料取得、外部系統行為操作、特定的資料庫操作..等。
     ![app_service](./images/app_service.png)
