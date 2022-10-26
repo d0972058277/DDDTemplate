@@ -184,6 +184,7 @@ builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssembli
 ## [補充] Domain Service 與 Application Service 的差別
 有些人會注意到專案的資料夾架構中有三個Service，包含了Domain Layer的Service、Application Layer的Service、Infrastructure Layer的Service。
 大致上可以分成兩類，如下圖所示：
+
 ![service](./images/service.png)
 1. Domain Service
     實作的過程當中，如果發現一些商業邏輯不適合放在Domain Model，就會另外實作在Domain Service中，例如：多個Aggregate的操作，像是帳戶A匯款給帳戶B時，帳戶A-100，帳戶B+100。
