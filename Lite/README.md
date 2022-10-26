@@ -164,6 +164,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies().Where(p => !p.IsDynamic), ServiceLifetime.Transient);
 ```
 3. **Process Flow**
+    
     Command 工作流程不外乎是
     - 開啟Transaction
     - 操作Domain Model(Aggregate)的生成方法
