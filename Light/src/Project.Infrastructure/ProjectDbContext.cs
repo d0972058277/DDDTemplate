@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Project.Infrastructure.EntityConfigurations.DeviceAggregate;
 
 namespace Project.Infrastructure
 {
