@@ -26,6 +26,7 @@ namespace Project.WebApi.Controllers.DeviceEndpoint
 
             var token = Token.Create(payload.Token).Value;
             var device = Device.Register(token);
+            
             _projectDbContext.Devices.Add(device);
 
             await _projectDbContext.SaveChangesAsync();
@@ -41,10 +42,12 @@ namespace Project.WebApi.Controllers.DeviceEndpoint
 
             var device = await _projectDbContext.Devices.FindAsync(payload.DeviceId).ThrowIfNullAsync(payload.DeviceId);
             await _projectDbContext.Entry(device).Collection(d => d.Notifications).Query().Where(n => n.Id == payload.NotificationId).LoadAsync();
+
             device.Read(payload.NotificationId);
 
             var notification = await _projectDbContext.Notifications.FindAsync(payload.NotificationId).ThrowIfNullAsync(payload.NotificationId);
             await _projectDbContext.Entry(notification).Collection(n => n.Devices).Query().Where(d => d.Id == payload.DeviceId).LoadAsync();
+
             notification.Read(payload.DeviceId);
 
             await _projectDbContext.SaveChangesAsync();
