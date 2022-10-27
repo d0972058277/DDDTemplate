@@ -3,7 +3,9 @@
 ## 分析
 傳統透過OOAD進行系統分析時，是透過**靜態分析**的方式來構築整個系統，會從需求文件或是User Story中提取主詞、動詞、受詞來設計繪製出UML、Class Diagram..等。
 
-而近代**動態分析**的方式崛起，開發團隊在進行專案討論、或是個人收到系統開發需求時，可以先透過 **DST(領域故事敘事)** 或 **ES(事件風暴)** 將整個系統內容攤開。我現在偏好使用DST作為第一步的系統分析工具，由於DST不需要特別的工具使用學習，就如同說故事一般，所以與沒有相關工具使用經驗的人一同討論時，相較於使用ES進行系統分析，DST會顯得特別友善。
+近期**動態分析**的方式崛起，開發團隊在進行專案討論、或是個人收到系統開發需求時，可以先透過 **DST(領域故事敘事)** 或 **ES(事件風暴)** 將整個系統內容攤開，與Domain Expert互動的過程中繪出整個系統的脈絡。
+
+而我現在偏好使用DST作為第一步的系統分析工具，由於DST不需要特別的工具使用學習，就如同說故事一般，與沒有相關工具使用經驗的人一同討論時，相較於使用ES進行系統分析，DST會顯得特別友善。
 
 **Domain Storytelling(DST)主要包含以下五種元素：**
 - **Actor**
@@ -43,7 +45,7 @@
 
 ---
 ## 設計
-假設系統分析已經到一個段落，就可以開始進行塑模(Modeling)的動作，可以將Work Object從DST中提取出來，連接出Work Object彼此的關係，附上Work Object需要擁有的屬性(Property)，並標記出Work Object能夠執行的方法(Method)，通常Work Object的方法會是DST中的Activity，如下圖所示：
+假設系統分析已經到一個段落，就可以開始進行塑模(Modeling)的動作，將Work Object從DST中提取出來，連接出Work Object彼此的關係，附上Work Object需要擁有的屬性(Property)，並標記出Work Object能夠執行的方法(Method)。通常Work Object的方法會是DST中的Activity，如下圖所示：
 ![modeling](./images/modeling.png)
 
 Modeling的過程中，需要一些DDD的基本元素認識：
@@ -60,8 +62,15 @@ Modeling的過程中，需要一些DDD的基本元素認識：
 - **Aggregate** 本身是一個Entity ，是當前Bounded Context中**Entity**與**Value Object**所組成的聚合物。
 
 上圖中，我塑模成兩個主要的Aggregate，分別是推播(Notification)與裝置(Device)：
-- 1個Notification(Aggregate)擁有1個Message(VO)與1個Schedule(VO)，且有1~n個Device(Entity)，Device(Entity)與Device(Aggregate)有間接關聯的關係。
-- 1個Device(Aggregate)擁有1個Token(VO)，且有0~n個Notification(Entity)，Notification(Entity)與Notification(Aggregate)有間接關聯的關係。
+- 1個Notification(Aggregate)
+    - 擁有1個Message(Value Object)
+    - 擁有1個Schedule(Value Object)
+    - 有1~n個Device(Entity)
+        - Device(Entity)與Device(Aggregate)有間接關聯的關係
+- 1個Device(Aggregate)
+    - 擁有1個Token(Value Object)
+    - 有0~n個Notification(Entity)
+        - Notification(Entity)與Notification(Aggregate)有間接關聯的關係。
 
 ---
 ## 實作
@@ -87,7 +96,7 @@ Project Root
     └ Services (撰寫Domain Service的Unit Test)
 ```
 #### 1. 透過TDD來實作領域模型
-可以先從Value Object作為TDD開發的起手式。以Token為例子，Token的資料是「不可為空或空字串」的，如下所示：
+可以先從Value Object作為TDD開發的起手式。以Token為例子，Token的業務邏輯是「不可為空或空字串」的，如下所示：
 ![unit_test](./images/unit_test.png)
 1. Token被設計成Value Object，實作時就會繼承Value Object
 2. 建構子被宣告成private，讓Token無法直接透過建構子進行物件生成。
@@ -100,7 +109,7 @@ Project Root
 是不是很簡單？Code First + TDD在開發初期不需要特別煩惱Table Schema就可以進行Domain Model的實作，並將商業邏輯封裝在其中。快速失敗、快速驗證，在這個階段遇到問題，就可以馬上在開發團隊中反應。
 
 #### 2. 進行Entity Configurations的設定與Db Migrations
-開始涉及到Infrastructure的階段是我認為**最難**的，這階段就相當於過去Db First中Table Schema的規劃設計，需要將Domain Model透過Ef.Core映射成Table Schema。
+開始涉及到Infrastructure的階段是我認為**麻煩**的，這階段就相當於過去Db First中Table Schema的規劃設計，需要將Domain Model透過Ef.Core映射成Table Schema。
 
 ##### Entity Configurations
 這邊拿Device(Aggregate)作為例子，會在Infrastructure/EntityConfigurations/DeviceAggregate的目錄下加入Device的Entity Configuration，如下圖所示：
@@ -108,14 +117,14 @@ Project Root
 Entity Configuration的設定可以參考[Microsoft的教學](https://learn.microsoft.com/zh-tw/ef/core/modeling/)。
 
 這邊主要特別介紹Owns與Has這兩個差別。
-> 概念上被Owns的物件無法單獨存在，Aggregate一定要存在才允許被Owns的物件存在，Aggregate消失則被Owns的物件也會隨之消失。在Find Aggregate時，被Owns的物件也會一同被取出。
-Has的話就沒有那麼強的約束力，Aggregate消失，被Has的物件會依據設定來做對應的行為。在Find Aggregate時，被Has的物件不會一同被取出，需要透過[另外載入的方式](https://learn.microsoft.com/zh-tw/ef/core/querying/related-data/)。
-範例中Device的Notifications被設定成HasMany，且在OnDelete時設定成一同刪除，其主要是在模擬Owns「Aggregate消失則被Owns的物件也會隨之消失」的特性。會這麼做是考量到Device可能擁有幾千個Notifications，如果每次Find Device都將所有的Notifications取出會太花資源。
+> 概念上被Owns的物件視為無法單獨存在，Aggregate一定要存在才允許被Owns的物件存在，Aggregate消失則被Owns的物件也會隨之消失。**在Find Aggregate時，被Owns的物件也會一同被取出。**
+Has的話就沒有那麼強的約束力，Aggregate消失，被Has的物件會依據設定來做對應的行為。在Find Aggregate時，被Has的物件不會一同被取出，需要另外透過[載入相關資料的方式](https://learn.microsoft.com/zh-tw/ef/core/querying/related-data/)。
+範例中，Device的Notifications被設定成HasMany，且在OnDelete時設定成一同刪除。其主要是在模擬Owns「Aggregate消失則被Owns的物件也會隨之消失」的特性。並且考量到Device可能擁有幾千個Notifications，如果設定成Owns，每次Find Device都將所有的Notifications取出，會花費太多無意義的資源使用。
 
 結束Device(Aggregate)的設定後，可以看看Device底下Notification(Entity)的設定，如下所示：
 ![entity_config2](./images/entity_config2.png)
-這邊特別注意到有另外加入了「AutoIncreamentPK」這個自動增加的[影子屬性](https://learn.microsoft.com/zh-tw/ef/core/modeling/shadow-properties)PKey。
-> 會這麼做的原因是，實作上我們通常只會對Aggregate進行Find、Add、Update、Remove等操作，Aggregate底下的Entity或Value Object完全靠Ef.Core來幫我們進行追蹤，當Entity已經有Id(PKey)時，Ef.Core會默認將物件視為Modified，這將導致原本應該Insert的Entity變成執行Update的SQL語法，所以需要一個影子PKey來方便使用Ef.Core進行Model狀態追蹤。
+這邊特別注意到有另外加入了「AutoIncreamentPK」這個自動增加的[陰影Primary Key](https://learn.microsoft.com/zh-tw/ef/core/modeling/shadow-properties)。
+> 會這麼做的原因是，實作上我們通常只會對Aggregate進行Find、Add、Update、Remove等操作，Aggregate底下的Entity或Value Object完全靠Ef.Core來幫我們進行追蹤，當Entity已經有Id(Primary Key)時，Ef.Core會默認將物件視為Modified，這將導致原本應該Insert的Entity變成執行Update的SQL語法，所以需要一個陰影Primary Key來方便使用Ef.Core進行Model狀態追蹤。
 
 當Entity Configuration設定完之後，即可建立對應的DbContext，如下圖所示：
 ![dbContext](./images/dbContext.png)
@@ -148,24 +157,26 @@ dotnet ef database update
 
 #### 3. 實作WebApi
 在實作WebApi階段，請習慣性地將它拆分成 **Command** 與 **Query** 區塊。
-**Command** 指的是會進行資料新增、異動、刪除..等動作；
-**Query** 指的是單純資料讀取，不會有任何資料異動。
+- **Command** 指的是會進行資料新增、異動、刪除..等動作
+- **Query** 指的是單純資料讀取，不會有任何資料異動
 
 實作主要會關注三個內容：
-1. **DTO(Data Transfer Object)**
-用於WebApi進行Request或Response的物件模型
+1. **DTO(Data Transfer Object)** 資料傳輸物件
+用於WebApi進行 **Request** 或 **Response** 的物件模型
 ![dto](./images/dto.png)
-2. **Model Validator**
+2. **Model Validator** 模型驗證
 還記得將商業邏輯封裝在Domain層嗎？這邊拿Token為例子，可以在Validator中透過Token(Value Object)來驗證商業邏輯「不可為空或空字串」的資料正確性。
 ![validator](./images/validator.png)
+驗證Request模型失敗會如下圖所示：
+![invalid](./images/invalid.png)
 **DI要記得註冊FluentValidation**
 ```
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies().Where(p => !p.IsDynamic), ServiceLifetime.Transient);
 ```
-3. **Process Flow**
+3. **Process Flow** 工作流程
     
-    Command 工作流程不外乎是
+    Command 的工作流程不外乎是
     - 開啟Transaction
     - 操作Domain Model(Aggregate)的生成方法
     - 進行DbContext的Add/Remove
