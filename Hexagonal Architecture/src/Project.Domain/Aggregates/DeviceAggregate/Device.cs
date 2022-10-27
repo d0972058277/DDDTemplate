@@ -1,5 +1,6 @@
 using Architecture;
 using KnstArchitecture.SequentialGuid;
+using Project.Domain.Events;
 
 namespace Project.Domain.Aggregates.DeviceAggregate
 {
@@ -21,6 +22,7 @@ namespace Project.Domain.Aggregates.DeviceAggregate
         {
             var id = SequentialGuid.NewGuid();
             var device = new Device(id, token);
+            device.AddDomainEvent(new DeviceRegisteredDomainEvent(device.Id));
             return device;
         }
 
@@ -32,6 +34,7 @@ namespace Project.Domain.Aggregates.DeviceAggregate
                 return;
 
             _notifications.Add(notification);
+            AddDomainEvent(new NotificationAttachedDomainEvent(Id, notification.Id));
         }
 
         public void Read(Guid notificationId)
@@ -41,6 +44,7 @@ namespace Project.Domain.Aggregates.DeviceAggregate
             if (notifications.TryGetValue(notificationId, out var notification))
             {
                 notification.Read();
+                AddDomainEvent(new NotificationReadDomainEvent(Id, notificationId));
             }
         }
     }

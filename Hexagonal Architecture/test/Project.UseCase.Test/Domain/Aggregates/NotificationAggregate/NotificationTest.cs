@@ -4,6 +4,7 @@ using Architecture;
 using FluentAssertions;
 using KnstArchitecture.SequentialGuid;
 using Project.Domain.Aggregates.NotificationAggregate;
+using Project.Domain.Events;
 using Xunit;
 
 namespace Project.UseCase.Test.Domain.Aggregates.NotificationAggregate
@@ -16,6 +17,7 @@ namespace Project.UseCase.Test.Domain.Aggregates.NotificationAggregate
             var schedule = ScheduleTest.CreateSuccessValue();
             var devices = Enumerable.Range(1, 10).Select(i => DeviceTest.CreateSuccessValue()).ToHashSet();
             var notification = Notification.Register(message, schedule, devices);
+            notification.ClearDomainEvents();
             return notification;
         }
 
@@ -35,6 +37,8 @@ namespace Project.UseCase.Test.Domain.Aggregates.NotificationAggregate
             notification.Schedule.Should().Be(schedule);
             notification.Devices.Should().BeEquivalentTo(devices);
             notification.PushedTime.Should().BeNull();
+            notification.DomainEvents.Single().As<NotificationRegisteredDomainEvent>().NotificationId.Should().Be(notification.Id);
+            notification.DomainEvents.Single().As<NotificationRegisteredDomainEvent>().DeviceIds.Should().BeEquivalentTo(devices.Select(d => d.Id).ToList());
         }
 
         [Fact]
@@ -48,6 +52,7 @@ namespace Project.UseCase.Test.Domain.Aggregates.NotificationAggregate
 
             // Then
             notification.PushedTime.Should().Be(SystemDateTime.UtcNow);
+            notification.DomainEvents.Single().As<NotificationPushedDomainEvent>().NotificationId.Should().Be(notification.Id);
         }
 
         [Fact]
@@ -62,6 +67,8 @@ namespace Project.UseCase.Test.Domain.Aggregates.NotificationAggregate
 
             // Then
             notification.Devices.Single(d => d.Id == deviceId).ReadTime.Should().Be(SystemDateTime.UtcNow);
+            notification.DomainEvents.Single().As<DeviceReadDomainEvent>().NotificationId.Should().Be(notification.Id);
+            notification.DomainEvents.Single().As<DeviceReadDomainEvent>().DeviceId.Should().Be(deviceId);
         }
 
         [Fact]
@@ -76,6 +83,7 @@ namespace Project.UseCase.Test.Domain.Aggregates.NotificationAggregate
 
             // Then
             notification.Devices.All(d => d.ReadTime == default(DateTime?)).Should().BeTrue();
+            notification.DomainEvents.Should().BeEmpty();
         }
     }
 }

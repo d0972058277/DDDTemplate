@@ -4,6 +4,7 @@ using Architecture;
 using FluentAssertions;
 using KnstArchitecture.SequentialGuid;
 using Project.Domain.Aggregates.DeviceAggregate;
+using Project.Domain.Events;
 using Xunit;
 
 namespace Project.UseCase.Test.Domain.Aggregates.DeviceAggregate
@@ -14,6 +15,7 @@ namespace Project.UseCase.Test.Domain.Aggregates.DeviceAggregate
         {
             var token = TokenTest.CreateSuccessValue();
             var device = Device.Register(token);
+            device.ClearDomainEvents();
             return device;
         }
 
@@ -29,6 +31,7 @@ namespace Project.UseCase.Test.Domain.Aggregates.DeviceAggregate
             // Then
             device.Id.Should().NotBeEmpty();
             device.Token.Should().Be(token);
+            device.DomainEvents.Single().As<DeviceRegisteredDomainEvent>().DeviceId.Should().Be(device.Id);
         }
 
         [Fact]
@@ -43,6 +46,8 @@ namespace Project.UseCase.Test.Domain.Aggregates.DeviceAggregate
 
             // Then
             device.Notifications.Contains(notification);
+            device.DomainEvents.Single().As<NotificationAttachedDomainEvent>().DeviceId.Should().Be(device.Id);
+            device.DomainEvents.Single().As<NotificationAttachedDomainEvent>().NotificationId.Should().Be(notification.Id);
         }
 
         [Fact]
@@ -52,12 +57,14 @@ namespace Project.UseCase.Test.Domain.Aggregates.DeviceAggregate
             var device = DeviceTest.CreateRegistered();
             var notification = NotificationTest.CreateSuccessValue();
             device.Attach(notification);
+            device.ClearDomainEvents();
 
             // When
             device.Attach(notification);
 
             // Then
             device.Notifications.Count.Should().Be(1);
+            device.DomainEvents.Should().BeEmpty();
         }
 
         [Fact]
@@ -67,12 +74,15 @@ namespace Project.UseCase.Test.Domain.Aggregates.DeviceAggregate
             var device = DeviceTest.CreateRegistered();
             var notification = NotificationTest.CreateSuccessValue();
             device.Attach(notification);
+            device.ClearDomainEvents();
 
             // When
             device.Read(notification.Id);
 
             // Then
             device.Notifications.Single(d => d.Id == notification.Id).ReadTime.Should().Be(SystemDateTime.UtcNow);
+            device.DomainEvents.Single().As<NotificationReadDomainEvent>().DeviceId.Should().Be(device.Id);
+            device.DomainEvents.Single().As<NotificationReadDomainEvent>().NotificationId.Should().Be(notification.Id);
         }
 
         [Fact]
@@ -82,12 +92,14 @@ namespace Project.UseCase.Test.Domain.Aggregates.DeviceAggregate
             var device = DeviceTest.CreateRegistered();
             var notification = NotificationTest.CreateSuccessValue();
             device.Attach(notification);
+            device.ClearDomainEvents();
 
             // When
             device.Read(SequentialGuid.NewGuid());
 
             // Then
             device.Notifications.All(n => n.ReadTime == default(DateTime?)).Should().BeTrue();
+            device.DomainEvents.Should().BeEmpty();
         }
     }
 }
