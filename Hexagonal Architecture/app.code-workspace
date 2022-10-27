@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "src/Architecture"
+		},
+		{
+			"path": "src/Project.Domain"
+		},
+		{
+			"path": "src/Project.Application"
+		},
+		{
+			"path": "src/Project.Infrastructure"
+		},
+		{
+			"path": "src/Project.Migrations"
+		},
+		{
+			"path": "src/Project.WebApi"
+		}
+	],
+	"settings": {}
+}
