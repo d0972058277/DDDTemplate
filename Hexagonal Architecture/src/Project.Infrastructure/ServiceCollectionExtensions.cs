@@ -1,7 +1,10 @@
 using Architecture;
 using Dapper;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Project.Infrastructure.Dapper;
+using Project.Infrastructure.MediatR.PipelineBehaviors;
 
 namespace Project.Infrastructure
 {
@@ -14,6 +17,12 @@ namespace Project.Infrastructure
 
             services.AddAllTypes<IRepository>(ServiceLifetime.Transient);
             services.AddAllTypes<IApplicationService>(ServiceLifetime.Transient);
+
+            services.TryAddTransient<IEventMediator, EventMediator>();
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryBehaviour<,>));
 
             return services;
         }
