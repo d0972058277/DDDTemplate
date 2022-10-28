@@ -6,7 +6,7 @@ namespace Project.Infrastructure
 {
     public class ReadonlyProjectDbContext : ProjectDbContext
     {
-        public ReadonlyProjectDbContext(DbContextOptions options) : base(options) { }
+        public ReadonlyProjectDbContext(DbContextOptions<ProjectDbContext> options) : base(options) { }
 
         public override Task<IDbContextTransaction?> BeginTransactionAsync(CancellationToken cancellationToken)
         {

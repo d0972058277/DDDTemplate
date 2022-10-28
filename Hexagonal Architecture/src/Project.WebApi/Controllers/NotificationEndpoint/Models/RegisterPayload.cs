@@ -1,4 +1,5 @@
 using FluentValidation;
+using Project.Application.Commands.RegisterNotification;
 using Project.Domain.Aggregates.NotificationAggregate;
 
 namespace Project.WebApi.Controllers.NotificationEndpoint.Models
@@ -13,6 +14,13 @@ namespace Project.WebApi.Controllers.NotificationEndpoint.Models
         {
             public string Title { get; set; } = default!;
             public string Body { get; set; } = default!;
+        }
+
+        public RegisterNotificationCommand ToCommand()
+        {
+            var message = Domain.Aggregates.NotificationAggregate.Message.Create(Message.Title, Message.Body).Value;
+            var schedule = Domain.Aggregates.NotificationAggregate.Schedule.Create(Schedule).Value;
+            return new RegisterNotificationCommand(message, schedule, DeviceIds);
         }
     }
 

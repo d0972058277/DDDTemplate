@@ -5,7 +5,7 @@ namespace Project.Infrastructure
 {
     public class ProjectDbContext : DbContext
     {
-        public ProjectDbContext(DbContextOptions options) : base(options) { }
+        public ProjectDbContext(DbContextOptions<ProjectDbContext> options) : base(options) { }
 
         public DbSet<Domain.Aggregates.DeviceAggregate.Device> Devices => Set<Domain.Aggregates.DeviceAggregate.Device>();
         public DbSet<Domain.Aggregates.DeviceAggregate.Notification> DeviceNotifications => Set<Domain.Aggregates.DeviceAggregate.Notification>();
