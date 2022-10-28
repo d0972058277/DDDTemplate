@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using Project.Infrastructure;
@@ -29,14 +30,25 @@ builder.Services.AddDbContext<ProjectDbContext>(dbContextOptionsBuilder =>
     dbContextOptionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), mySqlOptionsAction =>
     {
         mySqlOptionsAction.CommandTimeout(5);
+        mySqlOptionsAction.EnableRetryOnFailure();
     });
 
     // NOTE: 用來顯示 Sql 參數化的參數內容
     // builder.EnableSensitiveDataLogging();
 });
+builder.Services.AddDbContext<ReadonlyProjectDbContext>(dbContextOptionsBuilder =>
+{
+    // TODO: 當有 Slave 的資料庫時，需要修改這段連線字串
+    var connectionString = builder.Configuration.GetValue<string>("MySqlConnectionString");
+    dbContextOptionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
+    {
+        options.CommandTimeout(5);
+    }).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
+});
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies().Where(p => !p.IsDynamic), ServiceLifetime.Transient);
+builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddProject();
 
