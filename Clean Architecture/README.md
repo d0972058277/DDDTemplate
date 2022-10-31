@@ -51,12 +51,14 @@
 在Lite版本中，Aggregate的Method在執行過後沒有Domain Event的概念，這邊需要額外加進Domain Event的驗證。
 
 ![domain event test](./images/de_test.png)
+![aggregate](./images/aggregate.png)
 
 ~~
 
 Domain Service屬於Domain Layer的一部分，會在Domain這個資料夾底下建立對應的測試
 
 ![domain service test](./images/ds_test.png)
+![ds](./images/ds.png)
 
 ~~
 
