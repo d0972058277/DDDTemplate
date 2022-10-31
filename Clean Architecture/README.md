@@ -5,7 +5,7 @@
 常見的Hexagonal Architecture、Onion Architecture、Clean Architecture儘管著重的重點有些不同，但概念上是相同的。
 在設計規劃上，會使用Event Storming的藍圖來協助進行專案的實作，其優點是Event Storming中的元素內容，能夠很好的貼合專案實作的內容(In-Code)。
 ## 規劃
-> ### *Plans are worthless, but planning is everything.*
+> ***Plans are worthless, but planning is everything.***
 > <p align="right">Eisenhower</p>
 
 首先延續在Lite版本中Modeling階段的結果，為Domain Model中的Aggregate加入Event Storming裡Domain Event的便利貼元素，如下所示：
