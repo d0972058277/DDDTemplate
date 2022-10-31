@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Project.Infrastructure.IntegrationEvents.EntityConfigurations;
+using Project.Infrastructure.IntegrationEvents.Models;
 
 namespace Project.Infrastructure
 {
     public class ProjectDbContext : DbContext
     {
         public ProjectDbContext(DbContextOptions<ProjectDbContext> options) : base(options) { }
+
+        public DbSet<IntegrationEventEntry> IntegrationEvents => Set<IntegrationEventEntry>();
 
         public DbSet<Domain.Aggregates.DeviceAggregate.Device> Devices => Set<Domain.Aggregates.DeviceAggregate.Device>();
         public DbSet<Domain.Aggregates.DeviceAggregate.Notification> DeviceNotifications => Set<Domain.Aggregates.DeviceAggregate.Notification>();
@@ -14,6 +18,8 @@ namespace Project.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new IntegrationEventEntryTypeConfiguration());
+
             modelBuilder.ApplyConfiguration(new EntityConfigurations.DeviceAggregate.DeviceConfiguration());
             modelBuilder.ApplyConfiguration(new EntityConfigurations.DeviceAggregate.NotificationConfiguration());
 

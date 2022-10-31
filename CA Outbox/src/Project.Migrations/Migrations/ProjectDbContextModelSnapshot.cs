@@ -90,6 +90,43 @@ namespace Project.Migrations.Migrations
                     b.ToTable("Notification", (string)null);
                 });
 
+            modelBuilder.Entity("Project.Infrastructure.IntegrationEvents.Models.IntegrationEventEntry", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreationTimestamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("EventTypeName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<int>("TimesSent")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("EventId");
+
+                    b.HasIndex("CreationTimestamp");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("IntegrationEvent", (string)null);
+                });
+
             modelBuilder.Entity("Project.Domain.Aggregates.DeviceAggregate.Device", b =>
                 {
                     b.OwnsOne("Project.Domain.Aggregates.DeviceAggregate.Token", "Token", b1 =>

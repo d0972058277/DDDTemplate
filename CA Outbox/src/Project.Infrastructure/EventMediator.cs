@@ -1,5 +1,6 @@
 using Architecture;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Project.Infrastructure
 {
@@ -7,11 +8,13 @@ namespace Project.Infrastructure
     {
         private readonly IMediator _mediator;
         private readonly ProjectDbContext _dbContext;
+        private readonly IIntegrationEventOutbox<IDbContextTransaction> _integrationEventOutbox;
 
-        public EventMediator(IMediator mediator, ProjectDbContext dbContext)
+        public EventMediator(IMediator mediator, ProjectDbContext dbContext, IIntegrationEventOutbox<IDbContextTransaction> integrationEventOutbox)
         {
             _mediator = mediator;
             _dbContext = dbContext;
+            _integrationEventOutbox = integrationEventOutbox;
         }
 
         public Task PublishCommandAsync(ICommand command, CancellationToken cancellationToken = default)
@@ -31,7 +34,7 @@ namespace Project.Infrastructure
 
         public Task PublishIntegrationEventAsync<T>(T integrationEvent, CancellationToken cancellationToken = default) where T : IntegrationEvent
         {
-            throw new NotImplementedException();
+            return _integrationEventOutbox.AddEventAsync(_dbContext.CurrentTransaction, integrationEvent, cancellationToken);
         }
 
         public Task<R> PublishQueryAsync<R>(IQuery<R> query, CancellationToken cancellationToken = default)

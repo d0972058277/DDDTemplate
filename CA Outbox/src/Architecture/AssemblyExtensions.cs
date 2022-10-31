@@ -4,15 +4,15 @@ namespace System.Linq
 {
     public static class AssemblyExtensions
     {
-        public static IEnumerable<Type?> GetLoadableTypes(this Assembly assembly)
+        public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
         {
             try
             {
-                return assembly.GetTypes();
+                return assembly.GetTypes().ToList();
             }
             catch (ReflectionTypeLoadException e)
             {
-                return e.Types.Where(t => t is not null);
+                return e.Types.Where(t => t is not null).Select(t => t!).ToList();
             }
         }
     }
