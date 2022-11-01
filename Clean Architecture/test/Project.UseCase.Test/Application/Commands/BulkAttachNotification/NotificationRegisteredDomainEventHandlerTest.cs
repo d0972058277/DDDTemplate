@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Project.UseCase.Test.Application.Commands.BulkAttachNotification
 {
-    public class NotificationRegisterDomainEventHandlerTest
+    public class NotificationRegisteredDomainEventHandlerTest
     {
         [Fact]
         public async Task 推播登記後要附加至裝置中()
@@ -21,7 +21,7 @@ namespace Project.UseCase.Test.Application.Commands.BulkAttachNotification
             var eventMediator = new Mock<IEventMediator>();
 
             var domainEvent = new NotificationRegisteredDomainEvent(notificationId, deviceIds);
-            var handler = new NotificationRegisterDomainEventHandler(eventMediator.Object);
+            var handler = new NotificationRegisteredDomainEventHandler(eventMediator.Object);
 
             // When
             await handler.Handle(domainEvent, default);

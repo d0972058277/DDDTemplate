@@ -3,11 +3,11 @@ using Project.Domain.Events;
 
 namespace Project.Application.Commands.BulkAttachNotification
 {
-    public class NotificationRegisterDomainEventHandler : IDomainEventHandler<NotificationRegisteredDomainEvent>
+    public class NotificationRegisteredDomainEventHandler : IDomainEventHandler<NotificationRegisteredDomainEvent>
     {
         private readonly IEventMediator _eventMediator;
 
-        public NotificationRegisterDomainEventHandler(IEventMediator eventMediator)
+        public NotificationRegisteredDomainEventHandler(IEventMediator eventMediator)
         {
             _eventMediator = eventMediator;
         }
