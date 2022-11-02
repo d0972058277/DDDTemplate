@@ -27,6 +27,7 @@ namespace Project.Infrastructure
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryBehaviour<,>));
 
             services.TryAddTransient<IntegrationEventCorrelationService>();
+            services.TryAddTransient<IIntegrationEventOutbox, IntegrationEventOutbox>();
             services.TryAddTransient<IIntegrationEventOutbox<IDbContextTransaction>, IntegrationEventOutbox>();
             services.TryAddTransient<IInetgrationEventPublisher, InetgrationEventPublisher>();
 

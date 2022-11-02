@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "src/Project.Consumer"
+		},
+		{
+			"path": "src/Project.Scheduler"
 		}
 	],
 	"settings": {}
