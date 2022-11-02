@@ -1,9 +1,13 @@
+using CorrelationId;
+using CorrelationId.DependencyInjection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using Project.Infrastructure;
+using Project.Infrastructure.Masstransit.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,13 +50,34 @@ builder.Services.AddDbContext<ReadonlyProjectDbContext>(dbContextOptionsBuilder 
     }).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
 });
 
+builder.Services.AddMassTransit(x =>
+{
+    var environmentNamePrefix = builder.Environment.EnvironmentName;
+
+    x.FormatEndpointName(environmentNamePrefix);
+
+    x.UsingInMemory((context, config) =>
+    {
+        config.ConfigureEndpoints(context);
+        config.MessageTopology.FormattEntityName(environmentNamePrefix);
+    });
+});
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies().Where(p => !p.IsDynamic), ServiceLifetime.Transient);
 builder.Services.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddDefaultCorrelationId(options =>
+{
+    options.AddToLoggingScope = true;
+    options.RequestHeader = CorrelationIdOptions.DefaultHeader.ToLower();
+});
+
 builder.Services.AddProject();
 
 var app = builder.Build();
+
+app.UseCorrelationId();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

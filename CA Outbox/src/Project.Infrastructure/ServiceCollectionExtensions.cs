@@ -1,9 +1,11 @@
 using Architecture;
 using Dapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Project.Infrastructure.Dapper;
+using Project.Infrastructure.IntegrationEvents;
 using Project.Infrastructure.MediatR.PipelineBehaviors;
 
 namespace Project.Infrastructure
@@ -23,6 +25,10 @@ namespace Project.Infrastructure
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryBehaviour<,>));
+
+            services.TryAddTransient<IntegrationEventCorrelationService>();
+            services.TryAddTransient<IIntegrationEventOutbox<IDbContextTransaction>, IntegrationEventOutbox>();
+            services.TryAddTransient<IInetgrationEventPublisher, InetgrationEventPublisher>();
 
             return services;
         }
