@@ -17,6 +17,9 @@
 		},
 		{
 			"path": "src/Project.WebApi"
+		},
+		{
+			"path": "src/Project.Consumer"
 		}
 	],
 	"settings": {}

@@ -1,6 +1,7 @@
 using Architecture;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace Project.Infrastructure.MediatR.PipelineBehaviors
@@ -8,11 +9,13 @@ namespace Project.Infrastructure.MediatR.PipelineBehaviors
     public class CommandBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         private readonly ProjectDbContext _dbContext;
+        private readonly IIntegrationEventOutbox<IDbContextTransaction> _integrationEventOutbox;
         private readonly ILogger<CommandBehaviour<TRequest, TResponse>> _logger;
 
-        public CommandBehaviour(ProjectDbContext dbContext, ILogger<CommandBehaviour<TRequest, TResponse>> logger)
+        public CommandBehaviour(ProjectDbContext dbContext, IIntegrationEventOutbox<IDbContextTransaction> integrationEventOutbox, ILogger<CommandBehaviour<TRequest, TResponse>> logger)
         {
             _dbContext = dbContext;
+            _integrationEventOutbox = integrationEventOutbox;
             _logger = logger;
         }
 
@@ -72,6 +75,8 @@ namespace Project.Infrastructure.MediatR.PipelineBehaviors
                 _logger.LogInformation("----- SaveChangesAsync {TransactionId} for {CommandName} costs {ElapsedMilliseconds}ms", transactionId, typeName, sw.ElapsedMilliseconds);
 
                 _logger.LogInformation("----- Commit transaction {TransactionId} for {CommandName}", transactionId, typeName);
+
+                await _integrationEventOutbox.PublishEventsAsync(transaction, cancellationToken);
 
                 return result;
             });
