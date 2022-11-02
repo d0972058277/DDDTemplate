@@ -27,6 +27,7 @@
 3. 服務發送推播給使用者
 
 以DST進行領域故事描述會以下圖所示：
+
 ![dst overview](./images/dst_overview.png)
 
 當有一個Overview能夠表達此次的需求後，團隊成員可以開始討論每個Activity需不需要進行顆粒度更細的分析，像是Zoom-in拉近視角一般，畫出顆粒度更細的DST圖。
@@ -38,14 +39,17 @@
 4. 服務依據裝置的Token發送推播給使用者
 5. 服務列出裝置包含的推播訊息
 6. 使用者從裝置讀取推播
+
 ![dst 1](./images/dst_1.png)
 
 此外，可以將上圖步驟中的Activity抽出來當作獨立的一個User Story看待，這些User Story可以列成Backlog作為敏捷中的Work Item，如下圖所示：
+
 ![backlog](./images/backlog.png)
 
 ---
 ## 設計
 假設系統分析已經到一個段落，就可以開始進行塑模(Modeling)的動作，將Work Object從DST中提取出來，連接出Work Object彼此的關係，附上Work Object需要擁有的屬性(Property)，並標記出Work Object能夠執行的方法(Method)。通常Work Object的方法會是DST中的Activity，如下圖所示：
+
 ![modeling](./images/modeling.png)
 
 Modeling的過程中，需要一些DDD的基本元素認識：
@@ -97,12 +101,15 @@ Project Root
 ```
 #### 1. 透過TDD來實作領域模型
 可以先從Value Object作為TDD開發的起手式。以Token為例子，Token的業務邏輯是「不可為空或空字串」的，如下所示：
+
 ![unit_test](./images/unit_test.png)
+
 1. Token被設計成Value Object，實作時就會繼承Value Object
 2. 建構子被宣告成private，讓Token無法直接透過建構子進行物件生成。
 3. 提供Simple Factory的方法來生成Token，並將「不可為空或空字串」的商業邏輯寫在Simple Factory當中。這麼做是確保Token每次創建時，都需要經過Simple Factory中的業務邏輯來判斷資料的正確性。
 
 按照TDD的方式逐項完成塑模後的Domain Model，如下所示：
+
 ![unit_test2](./images/unit_test2.png)
 ![unit_test3](./images/unit_test3.png)
 
@@ -113,7 +120,9 @@ Project Root
 
 ##### Entity Configurations
 這邊拿Device(Aggregate)作為例子，會在Infrastructure/EntityConfigurations/DeviceAggregate的目錄下加入Device的Entity Configuration，如下圖所示：
+
 ![entity_config](./images/entity_config.png)
+
 Entity Configuration的設定可以參考[Microsoft的教學](https://learn.microsoft.com/zh-tw/ef/core/modeling/)。
 
 這邊主要特別介紹Owns與Has這兩個差別。
@@ -122,12 +131,16 @@ Has的話就沒有那麼強的約束力，Aggregate消失，被Has的物件會�
 範例中，Device的Notifications被設定成HasMany，且在OnDelete時設定成一同刪除。其主要是在模擬Owns「Aggregate消失則被Owns的物件也會隨之消失」的特性。並且考量到Device可能擁有幾千個Notifications，如果設定成Owns，每次Find Device都將所有的Notifications取出，會花費太多無意義的資源使用。
 
 結束Device(Aggregate)的設定後，可以看看Device底下Notification(Entity)的設定，如下所示：
+
 ![entity_config2](./images/entity_config2.png)
+
 這邊特別注意到有另外加入了「AutoIncreamentPK」這個自動增加的[陰影Primary Key](https://learn.microsoft.com/zh-tw/ef/core/modeling/shadow-properties)。
 > 會這麼做的原因是，實作上我們通常只會對Aggregate進行Find、Add、Update、Remove等操作，Aggregate底下的Entity或Value Object完全靠Ef.Core來幫我們進行追蹤，當Entity已經有Id(Primary Key)時，Ef.Core會默認將物件視為Modified，這將導致原本應該Insert的Entity變成執行Update的SQL語法，所以需要一個陰影Primary Key來方便使用Ef.Core進行Model狀態追蹤。
 
 當Entity Configuration設定完之後，即可建立對應的DbContext，如下圖所示：
+
 ![dbContext](./images/dbContext.png)
+
 Entity Configuration會套用在OnModelCreating的方法裡面，其對應的Entity會設定成DbContext的Property。
 
 ##### Db Migrations
@@ -150,10 +163,13 @@ dotnet ef database update
 ```
 如果對於CLI不了解怎麼使用，可以加上`-h`來獲取CLI的使用說明。
 - `dotnet ef migrations add {name}`會將Entity Configuration的內容輸出成Migration資料夾底下的Migration Class
-![migrations](./images/migrations.png)
+
+    ![migrations](./images/migrations.png)
+
 - `dotnet ef migrations remove`則是捨棄最近一次的Migration Class
 - `dotnet ef database update`則是將資料庫更新到Migration中最新的狀態
-![db](./images/db.png)
+
+    ![db](./images/db.png)
 
 #### 3. 實作WebApi
 在實作WebApi階段，請習慣性地將它拆分成 **Command** 與 **Query** 區塊。
@@ -163,17 +179,23 @@ dotnet ef database update
 實作主要會關注三個內容：
 1. **DTO(Data Transfer Object)** 資料傳輸物件
 用於WebApi進行 **Request** 或 **Response** 的物件模型
-![dto](./images/dto.png)
+
+    ![dto](./images/dto.png)
+
 2. **Model Validator** 模型驗證
 還記得將商業邏輯封裝在Domain層嗎？這邊拿Token為例子，可以在Validator中透過Token(Value Object)來驗證商業邏輯「不可為空或空字串」的資料正確性。
-![validator](./images/validator.png)
-驗證Request模型失敗會如下圖所示：
-![invalid](./images/invalid.png)
-**DI要記得註冊FluentValidation**
-```
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies().Where(p => !p.IsDynamic), ServiceLifetime.Transient);
-```
+
+    ![validator](./images/validator.png)
+
+    驗證Request模型失敗會如下圖所示：
+
+    ![invalid](./images/invalid.png)
+
+    **DI要記得註冊FluentValidation**
+    ```
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies().Where(p => !p.IsDynamic), ServiceLifetime.Transient);
+    ```
 3. **Process Flow** 工作流程
     
     Command 的工作流程不外乎是
@@ -181,14 +203,18 @@ builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssembli
     - 操作Domain Model(Aggregate)的生成方法
     - 進行DbContext的Add/Remove
     - 儲存變更並Commit
-    ![command](./images/command.png)
+
+        ![command](./images/command.png)
+
     - 開啟Transaction
     - 取出Domain Model(Aggregate)
     - 操作Domain Model(Aggregate)
     - 儲存變更並Commit
-    ![command2](./images/command2.png)
+
+        ![command2](./images/command2.png)
 
     Query 由於不會涉及到資料操在，所以不會出現系統資料正確性的問題，實作上就更為輕鬆，可以直接透過Sql查詢出來即可。
+
     ![query](./images/query.png)
 
 ---
@@ -197,6 +223,7 @@ builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssembli
 大致上可以分成兩類，如下圖所示：
 
 ![service](./images/service.png)
+
 1. **Domain Service**
     
     實作的過程當中，如果發現一些商業邏輯不適合放在Domain Model，就會另外實作在Domain Service中，例如：多個Aggregate的操作，像是帳戶A匯款給帳戶B時，帳戶A-100，帳戶B+100。
@@ -204,4 +231,5 @@ builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssembli
 2. **Application Service**
     
     Application Layer的Service是Interface宣告、Infrastructure Layer的Service是Class實作。幾本上涉及到IO的都會放在Application Service當中，例如：檔案上傳、外部系統資料取得、外部系統行為操作、特定的資料庫操作..等。
+    
     ![app_service](./images/app_service.png)
