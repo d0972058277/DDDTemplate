@@ -81,7 +81,7 @@ Command的實作內容與Lite版本中提到的差不多，不外乎是
 
 ![command2](./images/command2.png)
 
-相比與Lite版本Process Flow的內容，這邊會更專注在自身Command Block中聚焦的流成動作。
+相比與Lite版本Process Flow的內容，這邊會更專注在自身Command Block中聚焦的流程動作。
 
 ~~
 
