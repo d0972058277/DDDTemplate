@@ -308,4 +308,5 @@ Project Root
 **開發時請注意核心原則「低層級可以依賴高層級，高層級不可依賴低層級」**
 
 App (Migrations/WebApi/Test) **可以**依賴 Domain、Application、Infrastructure
+
 Domain **不可以**依賴 Application、Infrastructure、App (Migrations/WebApi/Test)
