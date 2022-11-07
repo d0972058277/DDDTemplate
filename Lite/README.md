@@ -82,7 +82,9 @@
 ![modeling basic](./images/modeling_basic.png)
 
 Actor直接操作的Work Object可以被歸納成Aggregate，這邊使用黃色字底標記成Aggregate。
+
 接著附上Work Object需要擁有的屬性(Property)(綠色)，並標記出Work Object能夠執行的方法(Method)(藍色)。
+
 通常Work Object的方法會是DST中的Activity，如下圖所示：
 
 ![modeling](./images/modeling.png)
