@@ -22,37 +22,47 @@
 *DST有一些表達上的規則，有興趣的朋友可以自行找相關的資料進行學習。*
 
 以下我會以一個簡單的推播需求為例子，大致上的需求內容是：
-1. 使用者註冊裝置與推播Token到服務中
-2. 行銷人員登記推播到服務，推播中包含訊息內文、排程時間、目標裝置..等資訊
-3. 服務發送推播給使用者
+1. **使用者註冊裝置與推播Token到服務中**
+2. **行銷人員登記推播到服務，推播中包含訊息內文、排程時間、目標裝置..等資訊**
+3. **服務發送推播給使用者**
 
 以DST進行領域故事描述會以下圖所示：
 
 ![dst overview](./images/dst_overview.png)
 
-當有一個Overview能夠表達此次的需求後，團隊成員可以開始討論每個Activity需不需要進行顆粒度更細的分析，像是Zoom-in拉近視角一般，畫出顆粒度更細的DST圖。
+當有一個Overview能夠表達此次的需求後，團隊成員可以開始討論每個Activity需不需要進行顆粒度更細的分析，像是Zoom-in拉近視角一般，畫出顆粒度更細的DST。
 
-而我這邊並沒有透過Zoom-in的方式進行顆粒度更細的分析，而是另外補充系統流程中其他的動作行為，如下圖所示：
-1. 使用者註冊裝置與推播Token到服務中
-2. 行銷人員登記推播到服務，推播中包含訊息內文、排程時間、目標裝置..等資訊
-3. 服務將推播附加至裝置當中
-4. 服務依據裝置的Token發送推播給使用者
-5. 服務列出裝置包含的推播訊息
-6. 使用者從裝置讀取推播
+- **使用者註冊裝置與推播Token到服務中：**
+    Token會有不可為空或空字串的規則
 
-![dst 1](./images/dst_1.png)
+    ![dst 1](./images/dst_1.png)
 
-此外，可以將上圖步驟中的Activity抽出來當作獨立的一個User Story看待，這些User Story可以列成Backlog作為敏捷中的Work Item，如下圖所示：
+- **行銷人員登記推播到服務，推播中包含訊息內文、排程時間、目標裝置..等資訊**
+    推播登記後要附加至裝置中
+
+    ![dst 2](./images/dst_2.png)
+
+- **服務發送推播給使用者**
+    1. 服務透過Device的Token發送Notification給使用者
+    2. 使用者從Device讀取Notfication
+    3. 服務從Notification標記Device已讀
+
+    ![dst 3](./images/dst_3.png)
+
+    - 可以再為**使用者從Device讀取Notfication**進行更細粒度的分析
+        1. 服務列出Device中的Notification清單
+        2. 使用者再從Device讀取Notification
+        3. 服務從Notification標記Device已讀
+
+        ![dst 4](./images/dst_4.png)
+
+此外，可以將上述步驟中的Activity可以抽出來當作獨立的一個User Story看待，這些User Story能夠列成Backlog作為敏捷中的Work Item，如下圖所示：
 
 ![backlog](./images/backlog.png)
 
 ---
 ## 設計
-假設系統分析已經到一個段落，就可以開始進行塑模(Modeling)的動作，將Work Object從DST中提取出來，連接出Work Object彼此的關係，附上Work Object需要擁有的屬性(Property)，並標記出Work Object能夠執行的方法(Method)。通常Work Object的方法會是DST中的Activity，如下圖所示：
-
-![modeling](./images/modeling.png)
-
-Modeling的過程中，需要一些DDD的基本元素認識：
+這邊要一些DDD的基本元素認識：
 - **Entity** 物件有生命週期，有狀態的變化，並且必須要擁有Id這個屬性。
     1. Entity最重要的是他的Id。
     2. 兩個Entity不論其他狀態，只要Id相同就是相同的物件。
@@ -63,9 +73,19 @@ Modeling的過程中，需要一些DDD的基本元素認識：
     1. 度量或描述了領域中的某項概念，像是房子的屋齡、顏色。
     2. 不變性(Immutability)，Value Object在創建後就不能再改變了，但可以被替換掉。
     3. 將相關屬性組成一個「概念整體(Conceptual Whole)」，必須要將相關的概念整合起來，才能完整且正確地描述一件事情，如：台幣100元，台幣+100元組成一個概念整體。
-- **Aggregate** 本身是一個Entity ，是當前Bounded Context中**Entity**與**Value Object**所組成的聚合物。
+- **Aggregate** 是由**Entity**與**Value Object**所組成的聚合物，本身是也一個Entity。
 
-上圖中，我塑模成兩個主要的Aggregate，分別是推播(Notification)與裝置(Device)：
+假設系統分析已經到一個段落，就可以開始進行塑模(Modeling)的動作，首先將Work Object從DST中提取出來，連接出Work Object彼此的關係。
+
+![modeling basic](./images/modeling_basic.png)
+
+Actor直接操作的Work Object可以被歸納成Aggregate，這邊使用黃色字底標記成Aggregate。
+接著附上Work Object需要擁有的屬性(Property)(綠色)，並標記出Work Object能夠執行的方法(Method)(藍色)。
+通常Work Object的方法會是DST中的Activity，如下圖所示：
+
+![modeling](./images/modeling.png)
+
+上圖中，主要塑模成兩個Aggregate，分別是 **推播(Notification)** 與 **裝置(Device)**，由於Aggregate不可在內部擁有另一個Aggregate，所以需要使用額外的Entity進行 *間接關聯* 的動作。
 - 1個Notification(Aggregate)
     - 擁有1個Message(Value Object)
     - 擁有1個Schedule(Value Object)
@@ -78,22 +98,28 @@ Modeling的過程中，需要一些DDD的基本元素認識：
 
 ---
 ## 實作
-專案資料夾結構上大致可分為Architecture、Domain、Application、Infrastructure、App，如下所示：
+專案資料夾結構上分為Architecture、Domain、Application、Infrastructure、App，如下所示：
 ```
 Project Root
 └ src
   └ * Architecture (基礎的架構建立與宣告)
+
   └ * Domain
     └ Aggregates (專案的核心，Domain Model與商業邏輯封裝的地方，塑模後的Aggregate會放在這)
     └ Exceptions
     └ Services (此處代表Domain Service的存放處)
+
   └ * Application
     └ Services (此處代表Application Service的存放處)
+
   └ * Infrastructure
     └ EntityConfigurations (ORM的配置與設定)
+
   └ * Migrations (生成Db Migrations的專案)
+
   └ * WebApi
     └ Controllers (WebApi的Endpoint)
+    
 └ test
   └ UseCase.Test
     └ Domain (撰寫Domain Model的Unit Test)
@@ -116,7 +142,7 @@ Project Root
 是不是很簡單？Code First + TDD在開發初期不需要特別煩惱Table Schema就可以進行Domain Model的實作，並將商業邏輯封裝在其中。快速失敗、快速驗證，在這個階段遇到問題，就可以馬上在開發團隊中反應。
 
 #### 2. 進行Entity Configurations的設定與Db Migrations
-開始涉及到Infrastructure的階段是我認為**麻煩**的，這階段就相當於過去Db First中Table Schema的規劃設計，需要將Domain Model透過Ef.Core映射成Table Schema。
+這階段就相當於過去Db First中Table Schema的規劃設計，需要將Domain Model透過Ef.Core映射成Table Schema。
 
 ##### Entity Configurations
 這邊拿Device(Aggregate)作為例子，會在Infrastructure/EntityConfigurations/DeviceAggregate的目錄下加入Device的Entity Configuration，如下圖所示：
@@ -228,8 +254,54 @@ dotnet ef database update
     
     實作的過程當中，如果發現一些商業邏輯不適合放在Domain Model，就會另外實作在Domain Service中，例如：多個Aggregate的操作，像是帳戶A匯款給帳戶B時，帳戶A-100，帳戶B+100。
 
+    ![domain_service](./images/domain_service.png)
+
 2. **Application Service**
     
-    Application Layer的Service是Interface宣告、Infrastructure Layer的Service是Class實作。幾本上涉及到IO的都會放在Application Service當中，例如：檔案上傳、外部系統資料取得、外部系統行為操作、特定的資料庫操作..等。
+    Application Layer的Service是Interface宣告、Infrastructure Layer的Service是Class實作。基本上涉及到IO的都會放在Application Service當中，例如：檔案上傳、外部系統資料取得、外部系統行為操作、特定的資料庫操作..等。
     
     ![app_service](./images/app_service.png)
+
+---
+
+## [補充] Clean Architecture
+
+```
+Project Root
+└ src
+  └ * Architecture (基礎的架構建立與宣告)
+
+  └ * Domain
+    └ Aggregates (專案的核心，Domain Model與商業邏輯封裝的地方，塑模後的Aggregate會放在這)
+    └ Exceptions
+    └ Services (此處代表Domain Service的存放處)
+
+  └ * Application
+    └ Services (此處代表Application Service的存放處)
+
+  └ * Infrastructure
+    └ EntityConfigurations (ORM的配置與設定)
+
+  └ * Migrations (生成Db Migrations的專案)
+
+  └ * WebApi
+    └ Controllers (WebApi的Endpoint)
+
+└ test
+  └ UseCase.Test
+    └ Domain (撰寫Domain Model的Unit Test)
+    └ Services (撰寫Domain Service的Unit Test)
+```
+
+專案架構的層級由 **高** 至 **低** 為：
+
+0. Architecture
+1. Domain
+2. Application
+3. Infrastructure
+4. App (Migrations/WebApi/Test)
+
+**開發時請注意核心原則「低層級可以依賴高層級，高層級不可依賴低層級」**
+
+App (Migrations/WebApi/Test) **可以**依賴 Domain、Application、Infrastructure
+Domain **不可以**依賴 Application、Infrastructure、App (Migrations/WebApi/Test)
