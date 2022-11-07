@@ -33,11 +33,13 @@
 當有一個Overview能夠表達此次的需求後，團隊成員可以開始討論每個Activity需不需要進行顆粒度更細的分析，像是Zoom-in拉近視角一般，畫出顆粒度更細的DST。
 
 - **使用者註冊裝置與推播Token到服務中：**
+
     Token會有不可為空或空字串的規則
 
     ![dst 1](./images/dst_1.png)
 
 - **行銷人員登記推播到服務，推播中包含訊息內文、排程時間、目標裝置..等資訊**
+
     推播登記後要附加至裝置中
 
     ![dst 2](./images/dst_2.png)
@@ -119,7 +121,7 @@ Project Root
 
   └ * WebApi
     └ Controllers (WebApi的Endpoint)
-    
+
 └ test
   └ UseCase.Test
     └ Domain (撰寫Domain Model的Unit Test)
