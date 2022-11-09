@@ -91,9 +91,11 @@ Notification Registered後續Policy觸發的Attach Notification可以收攏成Bu
 在Lite版本中，Aggregate的Method在執行過後沒有Domain Event的概念，這邊需要額外加進Domain Event的驗證。
 
 測試：
+
 ![domain event test](./images/de_test.png)
 
 實作：
+
 ![aggregate](./images/aggregate.png)
 
 ~~
@@ -101,9 +103,11 @@ Notification Registered後續Policy觸發的Attach Notification可以收攏成Bu
 Domain Service屬於Domain Layer的一部分，會在Domain這個資料夾底下建立對應的測試
 
 測試：
+
 ![domain service test](./images/ds_test.png)
 
 實作：
+
 ![ds](./images/ds.png)
 
 ~~
@@ -112,6 +116,7 @@ Command的屬於Application Layer的一部分，會在Application這個資料夾
 測試中會帶入測試替身(Mock)的物件，其主要原因是Command會開始與Db進行IO的動作，這邊會透過IRepository的方式來作為與Db的Interface，而Mock就是在模擬與Db的互動。
 
 測試：
+
 ![command test](./images/command_test.png)
 
 Command的實作內容與Lite版本中提到的差不多，不外乎是
@@ -141,12 +146,14 @@ Command的實作內容與Lite版本中提到的差不多，不外乎是
 ![policy](./images/policy.png)
 
 測試：
+
 ![domain event handler test](./images/dh_test.png)
 
 具體內容很簡單，就是依據Policy列的敘述來呼叫Command而已。
 **有時候會有流程上的判斷寫在Domain Event Handler當中。**
 
 實作：
+
 ![domain event handler](./images/dh.png)
 
 ~~
@@ -156,12 +163,14 @@ Query的宣告寫在Application Layer，Query Handler的實作內容寫在Infras
 行為模式上與Command vs Command Handler一樣。
 
 Infrastructure Layer的實作內容：
+
 ![query](./images/query.png)
 
 值得一提的是，Query Handler中使用的是 **ReadonlyDbContext** ，用來確保不會發生SaveChanges與Commit的操作，且也能夠真正做到資料庫連線上的讀寫分離。
 ReadonlyDbContext會在Infrastructure Layer撰寫實作，並在App Layer進行服務註冊。
 
 App Layer的使用：
+
 ![exe query](./images/exe_query.png)
 
 ~~
@@ -181,9 +190,11 @@ App Layer的使用：
 CA版本將應用邏輯、應用流程都封裝成了Command，所以只需考慮怎麼將DTO轉換成Command即可。
 
 DTO：
+
 ![dto](./images/dto.png)
 
 使用：
+
 ![exe command](./images/exe_command.png)
 
 ---
