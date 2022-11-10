@@ -219,11 +219,3 @@ Lite版本會讓Process Flow與App高度耦合，當有其他的App需要使用�
 ![strategy](./images/strategy.png)
 
 使用策略模式，可以將操作Query與Command的演算法封裝成Strategy，並且可以透過Unit Test來測試邏輯。
-
-測試：
-
-![strategy test](./images/strategy_test.png)
-
-實作：
-
-![strategy impl](./images/strategy_impl.png)
